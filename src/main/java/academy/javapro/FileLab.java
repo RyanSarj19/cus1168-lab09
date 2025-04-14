@@ -7,15 +7,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class FileLab {
-    // Store our sample data as a static List
     private static final List<Map<String, String>> salesData;
     private static final Scanner scanner = new Scanner(System.in);
 
-    // Initialize our sample data
     static {
         salesData = new ArrayList<>();
-
-        // Add all the sales records
         addSalesRecord("1001", "2023-01-15", "John Smith", "P123", "5", "29.99", "149.95", "North");
         addSalesRecord("1002", "2023-01-17", "Sarah Johnson", "P145", "2", "49.99", "99.98", "South");
         addSalesRecord("1003", "2023-01-18", "Michael Brown", "P123", "3", "29.99", "89.97", "East");
@@ -33,12 +29,9 @@ public class FileLab {
         addSalesRecord("1015", "2023-02-10", "Charles Garcia", "P123", "4", "29.99", "119.96", "East");
     }
 
-    /**
-     * Helper method to add a sales record to our static data
-     */
     private static void addSalesRecord(String orderId, String date, String customerName,
-                                      String productId, String quantity, String unitPrice,
-                                      String totalAmount, String region) {
+                                       String productId, String quantity, String unitPrice,
+                                       String totalAmount, String region) {
         Map<String, String> record = new HashMap<>();
         record.put("OrderID", orderId);
         record.put("Date", date);
@@ -48,57 +41,43 @@ public class FileLab {
         record.put("UnitPrice", unitPrice);
         record.put("TotalAmount", totalAmount);
         record.put("Region", region);
-
         salesData.add(record);
     }
 
-    /**
-     * Main method to run the filtering operations
-     */
     public static void main(String[] args) {
         System.out.println("===== Simplified File Data Processor =====\n");
-
-        // Display all data first
         System.out.println("Original Data:");
         displayData(salesData);
 
-        // Using a while loop for menu-driven operation
         boolean running = true;
         while (running) {
             displayMenu();
             int choice = getMenuChoice();
 
-            // Using switch for operation selection
             switch (choice) {
-                case 1 -> { // Filter by quantity
+                case 1:
                     System.out.println("\n===== Filter: Quantity > 5 (Large Orders) =====");
-                    List<Map<String, String>> largeOrders = filterQuantityGreaterThan(salesData, 5);
-                    displayData(largeOrders);
-                }
-                case 2 -> { // Filter by unit price
+                    displayData(filterQuantityGreaterThan(salesData, 5));
+                    break;
+                case 2:
                     System.out.println("\n===== Filter: UnitPrice > 100 (Expensive Products) =====");
-                    List<Map<String, String>> expensiveProducts = filterUnitPriceGreaterThan(salesData, 100);
-                    displayData(expensiveProducts);
-                }
-                case 3 -> { // Filter by region
+                    displayData(filterUnitPriceGreaterThan(salesData, 100));
+                    break;
+                case 3:
                     System.out.println("\n===== Filter: Region = \"North\" =====");
-                    List<Map<String, String>> northRegionOrders = filterByRegion(salesData, "North");
-                    displayData(northRegionOrders);
-                }
-                case 4 -> { // Exit the program
+                    displayData(filterByRegion(salesData, "North"));
+                    break;
+                case 4:
                     running = false;
                     System.out.println("Thank you for using the File Data Processor!");
-                }
-                default -> System.out.println("Invalid choice. Please try again.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
-
         scanner.close();
     }
 
-    /**
-     * Display the menu options
-     */
     private static void displayMenu() {
         System.out.println("\n==== Filter Operations ====");
         System.out.println("1. Find large orders (Quantity > 5)");
@@ -108,132 +87,94 @@ public class FileLab {
         System.out.print("Enter your choice (1-4): ");
     }
 
-    /**
-     * Get a valid menu choice (using do-while loop)
-     */
     private static int getMenuChoice() {
         int choice = 0;
-        boolean validInput = false;
-
+        boolean valid = false;
         do {
             try {
                 choice = Integer.parseInt(scanner.nextLine());
-                validInput = (choice >= 1 && choice <= 4);
-                if (!validInput) {
+                valid = (choice >= 1 && choice <= 4);
+                if (!valid) {
                     System.out.print("Please enter a number between 1 and 4: ");
                 }
             } catch (NumberFormatException e) {
                 System.out.print("Invalid input. Please enter a number: ");
             }
-        } while (!validInput);
-
+        } while (!valid);
         return choice;
     }
 
-    /**
-     * Display the data in a formatted table
-     * Using enhanced for loop
-     */
     private static void displayData(List<Map<String, String>> data) {
-        // Display header
         System.out.println(String.format("%-8s %-12s %-20s %-10s %-8s %-10s %-12s %-8s",
-                           "OrderID", "Date", "CustomerName", "ProductID", "Quantity",
-                           "UnitPrice", "TotalAmount", "Region"));
+                "OrderID", "Date", "CustomerName", "ProductID", "Quantity",
+                "UnitPrice", "TotalAmount", "Region"));
         System.out.println("-".repeat(90));
-
-        // Display each record using enhanced for loop
-        // TODO: Using enhanced for loop iterate through the data and print each record
-        // TODO: Using String.format for formatting using the specified width %-8s %-12s %-20s %-10s %-8s %-10s %-12s %-8s
-        // TODO: print the header and each record OrderID, Date, CustomerName, ProductID, Quantity, UnitPrice, TotalAmount, Region
-
-        // Display count
+        for (Map<String, String> record : data) {
+            System.out.println(String.format("%-8s %-12s %-20s %-10s %-8s %-10s %-12s %-8s",
+                    record.get("OrderID"),
+                    record.get("Date"),
+                    record.get("CustomerName"),
+                    record.get("ProductID"),
+                    record.get("Quantity"),
+                    record.get("UnitPrice"),
+                    record.get("TotalAmount"),
+                    record.get("Region")));
+        }
         System.out.println("-".repeat(90));
         System.out.println("Total records: " + data.size());
     }
 
-    /**
-     * Filter 1: Find orders with quantity greater than the specified value
-     * Using enhanced for loop and continue statement for flow control
-     */
-    private static List<Map<String, String>> filterQuantityGreaterThan(
-            List<Map<String, String>> data, int minQuantity) {
-
-        // TODO: Create a filteredData list to store the filtered records
-        // TODO: This list should be of type List<Map<String, String>>
-
-        // TODO: Using enhanced for loop to iterate through the data
-            // TODO: Using try-catch to handle NumberFormatException
-                // TODO: Create a variable quantity and parse the quantity from the record
-                // Using an if statement with continue for flow control
-                // TODO: If quantity is less than or equal to minQuantity, use continue to skip this record}
-
-                // If we get here, the record passed the filter
-                // TODO: Or else add the record to the filteredData list
-            // TODO: Catch NumberFormatException and print an error message
-                // Skip records with invalid quantity values
-                // TODO: Print an error message indicating the invalid record
-                // TODO: Print Invalid quantity format in record: and the OrderID
-        // TODO: Return the filteredData list
-        throw new UnsupportedOperationException("Not implemented yet");
+    private static List<Map<String, String>> filterQuantityGreaterThan(List<Map<String, String>> data, int minQuantity) {
+        List<Map<String, String>> result = new ArrayList<>();
+        for (Map<String, String> record : data) {
+            try {
+                if (Integer.parseInt(record.get("Quantity")) > minQuantity) {
+                    result.add(record);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid quantity in order: " + record.get("OrderID"));
+            }
+        }
+        return result;
     }
 
-    /**
-     * Filter 2: Find orders with unit price greater than the specified value
-     * Using traditional while loop instead of for loop
-     */
-    private static List<Map<String, String>> filterUnitPriceGreaterThan(
-            List<Map<String, String>> data, double minPrice) {
-
-        // TODO: Create a filteredData list to store the filtered records
-        // TODO: This list should be of type List<Map<String, String>>
-
-        // Using while loop and iterator
-        // TODO: Create an integer variable i and initialize it to 0
-        // TODO: Use a while loop to iterate through the data using data.size() as the condition
-            // TODO: Create a variable record and get the record at index i
-
-            // TODO: Using try-catch to handle NumberFormatException
-                // TODO: Create a variable unitPrice and parse the unit price from the record
-
-                // Using nested if statement
-                // TODO: If unitPrice is greater than minPrice, add the record to the filteredData list
-                    // TODO: Add the record to the filteredData list
-
-            // TODO: Catch NumberFormatException and print an error message
-                // Skip records with invalid price values
-                // TODO: Print an error message indicating the invalid record
-                // TODO: Print Invalid unit price format in record: and the OrderID
-
-            // TODO: Increment the counter i
-        // TODO: Return the filteredData list
-        throw new UnsupportedOperationException("Not implemented yet");
+    private static List<Map<String, String>> filterUnitPriceGreaterThan(List<Map<String, String>> data, double minPrice) {
+        List<Map<String, String>> result = new ArrayList<>();
+        int i = 0;
+        while (i < data.size()) {
+            Map<String, String> record = data.get(i);
+            try {
+                if (Double.parseDouble(record.get("UnitPrice")) > minPrice) {
+                    result.add(record);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid unit price in order: " + record.get("OrderID"));
+            }
+            i++;
+        }
+        return result;
     }
 
-    /**
-     * Filter 3: Find orders from a specific region
-     * Using enhanced for loop with switch statement for region comparison
-     */
-    private static List<Map<String, String>> filterByRegion(
-            List<Map<String, String>> data, String targetRegion) {
-
-        // TODO: Create a filteredData list to store the filtered records
-        // TODO: This list should be of type List<Map<String, String>>
-        // TODO: Use enhanced for loop to iterate through the data using temporary variable record
-            // TODO: Create a variable recordRegion and get the region from the record
-            // TODO: Using an if statement to check for null region, continue if null
-
-
-            // Using switch for region comparison
-            // TODO: Or else use switch statement to compare recordRegion with targetRegion
-                // TODO: Using case statements for each region
-                // TODO: If recordRegion matches targetRegion, add the record to filteredData
-                // TODO: Repeat this for all regions
-                // TODO: Add default case to handle unknown regions
-                // TODO: Print unknown region: and the recordRegion
-
-
-
-        // TODO: Return the filteredData list
-        throw new UnsupportedOperationException("Not implemented yet");
+    private static List<Map<String, String>> filterByRegion(List<Map<String, String>> data, String targetRegion) {
+        List<Map<String, String>> result = new ArrayList<>();
+        for (Map<String, String> record : data) {
+            String region = record.get("Region");
+            if (region == null) continue;
+            // Using a simple switch with if condition for matching the target region.
+            switch (region.toLowerCase()) {
+                case "north":
+                case "south":
+                case "east":
+                case "west":
+                    if (region.equalsIgnoreCase(targetRegion)) {
+                        result.add(record);
+                    }
+                    break;
+                default:
+                    System.out.println("Unknown region: " + region);
+                    break;
+            }
+        }
+        return result;
     }
 }
